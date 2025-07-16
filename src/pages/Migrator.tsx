@@ -1,8 +1,20 @@
 import { useState } from "react";
-import { Steps, Button, Upload, message, Card, Typography, Spin } from "antd";
+import {
+  Steps,
+  Button,
+  Upload,
+  message,
+  Card,
+  Typography,
+  Spin,
+  App,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import UploadDropZone from "../components/UploadDropZone";
 import AnalyzeVersionStep from "../components/AnalyzeVersionStep";
+import ScanWarningsStep from "../components/ScanWarningsStep";
+import GetAISuggestionsStep from "../components/GetAISuggestionsStep";
+import ApplyFixesStep from "../components/ApplyFixesStep";
 
 const { Step } = Steps;
 const { Title, Paragraph } = Typography;
@@ -10,6 +22,8 @@ const { Title, Paragraph } = Typography;
 export default function Migrator() {
   const [current, setCurrent] = useState(0);
   const [uploading, setUploading] = useState(false);
+  const [warnings, setWarnings] = useState<WarningItem[]>([]);
+
   // projects/e83cc75d83734d0245895f4cbd6f8d39
   const steps = [
     {
@@ -28,21 +42,29 @@ export default function Migrator() {
     {
       title: "Scan for Warnings",
       content: (
-        <Paragraph>Scanning files for outdated Angular patterns...</Paragraph>
+        <ScanWarningsStep
+          projectPath="projects/e83cc75d83734d0245895f4cbd6f8d39/rpp-ng-recon-admin"
+          onComplete={() => setCurrent(current + 1)}
+          onWarningsParsed={setWarnings}
+        />
       ),
     },
     {
       title: "Get AI Suggestions",
       content: (
-        <Paragraph>Select a warning to request a fix from the AI.</Paragraph>
+        <GetAISuggestionsStep
+          warnings={warnings}
+          path="projects/e83cc75d83734d0245895f4cbd6f8d39/rpp-ng-recon-admin"
+        />
       ),
     },
     {
       title: "Apply Fixes",
       content: (
-        <Paragraph>
-          Preview the suggested fix and apply it to your codebase.
-        </Paragraph>
+        <ApplyFixesStep
+          path="projects/e83cc75d83734d0245895f4cbd6f8d39/rpp-ng-recon-admin"
+          suggestions={[]}
+        />
       ),
     },
   ];
