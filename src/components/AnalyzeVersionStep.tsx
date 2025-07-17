@@ -1,39 +1,34 @@
 import { useEffect, useState } from "react";
 import { Typography, Spin, message, Card, List } from "antd";
 
+import { getProjectInfo, type ProjectInfo } from "../services/projectService";
+
 const { Paragraph, Title } = Typography;
 
 type Props = {
   projectPath: string;
-  onComplete: (data: any) => void;
+  onComplete: (data: ProjectInfo) => void;
 };
 
 export default function AnalyzeVersionStep({ projectPath, onComplete }: Props) {
   const [loading, setLoading] = useState(true);
-  const [info, setInfo] = useState<any>(null);
+  const [info, setInfo] = useState<ProjectInfo | null>(null);
 
   useEffect(() => {
     const fetchInfo = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:4000/api/project/info?path=${encodeURIComponent(
-            projectPath
-          )}`
-        );
-
-        if (!res.ok) throw new Error("Failed to analyze project");
-
-        const data = await res.json();
+        const data = await getProjectInfo(projectPath);
         setInfo(data);
-        setLoading(false);
         onComplete(data);
-      } catch (err) {
+      } catch {
         message.error("Error fetching project info");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchInfo();
-  }, [projectPath]);
+  }, [onComplete, projectPath]);
 
   if (loading) {
     return (
@@ -43,6 +38,14 @@ export default function AnalyzeVersionStep({ projectPath, onComplete }: Props) {
           Detecting Angular version and dependencies...
         </Paragraph>
       </div>
+    );
+  }
+
+  if (!info) {
+    return (
+      <Paragraph className="text-red-500 text-center">
+        Could not load project info.
+      </Paragraph>
     );
   }
 
@@ -57,9 +60,9 @@ export default function AnalyzeVersionStep({ projectPath, onComplete }: Props) {
           size="small"
           bordered
           dataSource={Object.entries(info.dependencies).slice(0, 10)}
-          renderItem={([dep, ver]) => (
+          renderItem={([dependency, version]) => (
             <List.Item>
-              <span className="font-medium">{dep}</span>: {ver}
+              <span className="font-medium">{dependency}</span>: {version}
             </List.Item>
           )}
         />

@@ -1,50 +1,68 @@
 import { InboxOutlined } from "@ant-design/icons";
 import { Upload, message, Typography } from "antd";
 import type { UploadProps } from "antd";
-import { RcFile } from "antd/lib/upload";
+import type { RcFile } from "antd/lib/upload";
 import { useState } from "react";
+import { uploadProject } from "../services/projectService";
+import { useProjectStore } from "../store/projectStore";
 
 const { Dragger } = Upload;
 const { Text } = Typography;
 
-export default function UploadDropZone({
-  onSuccess,
-}: {
-  onSuccess?: () => void;
-}) {
-  const [loadingFiles, setLoadingFiles] = useState<{ [key: string]: number }>(
-    {}
-  );
+export default function UploadDropZone({ onSuccess }: { onSuccess?: () => void }) {
+  const [loadingFiles, setLoadingFiles] = useState<{ [key: string]: number }>({});
+  const setProjectPath = useProjectStore((state) => state.setProjectPath);
 
-  const props: UploadProps = {
-    name: "project",
-    multiple: false,
-    action: "http://localhost:4000/api/project/upload",
-    onChange(info) {
-      const { status, name, percent } = info.file;
+  const customRequest: UploadProps["customRequest"] = async ({
+    file,
+    onSuccess: onOk,
+    onError,
+  }) => {
+    const f = file as RcFile;
+    const name = f.name;
 
-      if (status === "uploading") {
-        setLoadingFiles((prev) => ({ ...prev, [name]: percent || 0 }));
-      }
+    setLoadingFiles((prev) => ({ ...prev, [name]: 0 }));
 
-      if (status === "done") {
-        message.success(`${name} uploaded successfully`);
-        setLoadingFiles((prev) => {
-          const updated = { ...prev };
-          delete updated[name];
-          return updated;
-        });
-        onSuccess?.();
-      } else if (status === "error") {
-        message.error(`${name} upload failed`);
-      }
-    },
-    showUploadList: false,
+    try {
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress = Math.min(progress + Math.random() * 10, 90);
+        setLoadingFiles((prev) => ({ ...prev, [name]: progress }));
+      }, 200);
+
+      const res = await uploadProject(f);
+      clearInterval(interval);
+
+      setLoadingFiles((prev) => {
+        const updated = { ...prev };
+        delete updated[name];
+        return updated;
+      });
+
+      setProjectPath(res.projectPath);
+      message.success(`${name} uploaded successfully`);
+      onOk?.(res);
+      onSuccess?.();
+    } catch (err) {
+      setLoadingFiles((prev) => {
+        const updated = { ...prev };
+        delete updated[name];
+        return updated;
+      });
+      message.error(`${name} upload failed`);
+      onError?.(err as ProgressEvent<EventTarget>);
+    }
   };
 
   return (
-    <div className=" p-15">
-      <Dragger {...props} className="py-10">
+    <div className="p-15">
+      <Dragger
+        customRequest={customRequest}
+        multiple={false}
+        showUploadList={false}
+        name="project"
+        className="py-10"
+      >
         <p className="text-3xl text-blue-500 text-center mb-4">
           <InboxOutlined />
         </p>

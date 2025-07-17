@@ -9,44 +9,23 @@ import {
   Tabs,
   Input,
 } from "antd";
-import { BulbOutlined, CheckOutlined, CopyOutlined } from "@ant-design/icons";
+import {
+  BulbOutlined,
+  CheckOutlined,
+  CopyOutlined,
+} from "@ant-design/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { getAISuggestion } from "../services/aiService";
+import {
+  fetchFileCode,
+  applySuggestion,
+} from "../services/projectService";
 
 const { Title, Paragraph, Text } = Typography;
 
 interface Props {
   warnings: { key: string; fileName: string; description: string }[];
   path: string;
-}
-
-interface AiSuggestionRequest {
-  fileName: string;
-  code: string;
-  warning: string;
-}
-
-interface AiSuggestionResponse {
-  codeUpdated: string;
-  explanation?: string;
-  suggestedPrompt?: string;
-}
-
-async function getAISuggestion(
-  data: AiSuggestionRequest
-): Promise<AiSuggestionResponse> {
-  const res = await fetch("http://localhost:4000/api/ai/suggest", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to get AI suggestion");
-  }
-
-  return res.json();
 }
 
 export default function GetAISuggestionsStep({ warnings, path }: Props) {
@@ -61,35 +40,35 @@ export default function GetAISuggestionsStep({ warnings, path }: Props) {
   const [copied, setCopied] = useState(false);
   const [customPrompt, setCustomPrompt] = useState("");
   const [loadingPrompt, setLoadingPrompt] = useState(false);
-
-  async function fetchFileCode(
-    path: string,
-    fileName: string
-  ): Promise<string> {
-    const res = await fetch(
-      `http://localhost:4000/api/project/file?path=${encodeURIComponent(
-        path
-      )}&file=${encodeURIComponent(fileName)}`
-    );
-    if (!res.ok) throw new Error("Failed to load file content");
-    const json = await res.json();
-    return json.code;
-  }
+  const [applying, setApplying] = useState(false);
 
   const requestFix = async (fileName: string, warning: string) => {
     setLoading(true);
     try {
-      console.log("Requesting AI suggestion for:", fileName, warning);
       const code = await fetchFileCode(path, fileName);
       const response = await getAISuggestion({ fileName, code, warning });
       setSuggestion(response.codeUpdated || "No suggestion provided.");
       setExplanation(response.explanation || null);
       setCustomPrompt(response.suggestedPrompt || "");
       setModalOpen(true);
-    } catch (err) {
+    } catch {
       message.error("Failed to get suggestion from AI");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const applyFix = async () => {
+    if (!selectedWarning || !suggestion) return;
+    setApplying(true);
+    try {
+      await applySuggestion(`${path}/${selectedWarning.fileName}`, suggestion);
+      message.success("Suggestion applied successfully");
+      setModalOpen(false);
+    } catch {
+      message.error("Failed to apply suggestion");
+    } finally {
+      setApplying(false);
     }
   };
 
@@ -107,7 +86,7 @@ export default function GetAISuggestionsStep({ warnings, path }: Props) {
     {
       title: "Action",
       key: "action",
-      render: (_: any, record: any) => (
+      render: (_: unknown, record: { key: string; fileName: string; description: string }) => (
         <Tooltip title="Get AI Suggestion">
           <Button
             icon={<BulbOutlined />}
@@ -115,7 +94,7 @@ export default function GetAISuggestionsStep({ warnings, path }: Props) {
               setSelectedWarning(record);
               requestFix(record.fileName, record.description);
             }}
-            loading={loading && selectedWarning === record.description}
+            loading={loading && selectedWarning?.description === record.description}
           />
         </Tooltip>
       ),
@@ -123,28 +102,25 @@ export default function GetAISuggestionsStep({ warnings, path }: Props) {
   ];
 
   const requestRefinedSuggestion = async () => {
-    if (!selectedWarning) return;
+    if (!selectedWarning || !suggestion) return;
 
     setLoadingPrompt(true);
     try {
-      const res = await fetch("http://localhost:4000/api/ai/suggest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileName: selectedWarning.fileName,
-          warning: selectedWarning.description,
-          code: selectedWarning.originalCode || "",
-          prompt: customPrompt,
-        }),
+      const code = await fetchFileCode(path, selectedWarning.fileName);
+      const refined = await getAISuggestion({
+        fileName: selectedWarning.fileName,
+        warning: selectedWarning.description,
+        code,
+        prompt: customPrompt,
       });
-      const json = await res.json();
-      setSuggestion(json.codeUpdated || "No suggestion returned");
-    } catch (err) {
+      setSuggestion(refined.codeUpdated || "No suggestion returned");
+    } catch {
       message.error("Failed to refine suggestion");
     } finally {
       setLoadingPrompt(false);
     }
   };
+
   return (
     <div className="mt-4">
       <Title level={4}>Select a warning to request a fix from the AI</Title>
@@ -176,7 +152,7 @@ export default function GetAISuggestionsStep({ warnings, path }: Props) {
               <Text strong>Explanation:</Text> {explanation}
             </Paragraph>
             <div className="relative bg-gray-100 rounded max-h-[400px] overflow-auto pr-12">
-              <CopyToClipboard text={suggestion} onCopy={() => setCopied(true)}>
+              <CopyToClipboard text={suggestion || ""} onCopy={() => setCopied(true)}>
                 <Tooltip title={copied ? "Copied!" : "Copy to clipboard"}>
                   <Button
                     icon={copied ? <CheckOutlined /> : <CopyOutlined />}
@@ -185,9 +161,16 @@ export default function GetAISuggestionsStep({ warnings, path }: Props) {
                   />
                 </Tooltip>
               </CopyToClipboard>
-
               <pre className="p-4 whitespace-pre-wrap">{suggestion}</pre>
             </div>
+            <Button
+              type="primary"
+              onClick={applyFix}
+              className="mt-4"
+              loading={applying}
+            >
+              Apply Suggestion
+            </Button>
           </Tabs.TabPane>
 
           <Tabs.TabPane tab="Refine Suggestion" key="prompt">
