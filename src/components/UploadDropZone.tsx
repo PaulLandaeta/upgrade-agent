@@ -61,15 +61,17 @@ export default function UploadDropZone({ onSuccess }: { onSuccess?: () => void }
         multiple={false}
         showUploadList={false}
         name="project"
-        className="py-10"
+        className="!bg-[#F9FAFB] border-gray-300 rounded-lg  p-12"
       >
-        <p className="text-3xl text-blue-500 text-center mb-4">
-          <InboxOutlined />
-        </p>
-        <p className="text-lg text-gray-700 font-semibold mt-2">
-          Drag & drop your Angular ZIP file
-        </p>
-        <p className="text-gray-500 text-sm">or click to browse</p>
+        <div className="flex flex-col items-center justify-center space-y-4 py-10 h-80">
+           <InboxOutlined className="text-blue-500 text-6xl" />
+          <p className="text-xl font-semibold text-gray-700 text-center">
+            Drop your Angular ZIP here
+          </p>
+          <p className="text-gray-500 text-base text-center">
+            or click to upload from your computer
+          </p>
+        </div>
       </Dragger>
 
       {Object.keys(loadingFiles).length > 0 && (
@@ -83,7 +85,7 @@ export default function UploadDropZone({ onSuccess }: { onSuccess?: () => void }
                   style={{ width: `${percent}%` }}
                 />
               </div>
-              <span className="text-xs text-gray-600 w-12 text-right">
+              <span className="text-xs text-gray-600 w-20 text-center">
                 {Math.round(percent)}%
               </span>
             </div>

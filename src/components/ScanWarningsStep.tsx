@@ -32,7 +32,7 @@ export default function ScanWarningStep({
         const res = await fetch(
           `http://localhost:4000/api/project/warnings?path=${encodeURIComponent(
             projectPath
-          )}`
+          )}&from=6&to=8`
         );
         const json = await res.json();
         const parsed = parseWarnings(json.warnings);
@@ -104,14 +104,23 @@ export default function ScanWarningStep({
   );
 }
 
+type Warning = {
+  key: string;
+  fileName: string;
+  filePath: string;
+  description: string;
+};
+
 // Helper
-function parseWarnings(warnings: string[]): WarningItem[] {
+function parseWarnings(warnings: Warning[]): WarningItem[] {
   return warnings.map((w, i) => {
-    const match = w.match(/^\[(.+?)\]\s+(.*)$/);
+    const segments = w.filePath.split("/");
+    const fileName = segments[segments.length - 1];
     return {
       key: i.toString(),
-      fileName: match?.[1] || "Unknown file",
-      description: match?.[2] || w,
+      fileName,
+      filePath: w.filePath,
+      description: w.description,
     };
   });
 }
