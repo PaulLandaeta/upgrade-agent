@@ -30,10 +30,16 @@ interface WarningItem {
   description: string;
 }
 
-export default function ScanAndFixStep({ projectPath }: { projectPath: string }) {
+export default function ScanAndFixStep({
+  projectPath,
+}: {
+  projectPath: string;
+}) {
   const [loading, setLoading] = useState(true);
   const [warnings, setWarnings] = useState<WarningItem[]>([]);
-  const [selectedWarning, setSelectedWarning] = useState<WarningItem | null>(null);
+  const [selectedWarning, setSelectedWarning] = useState<WarningItem | null>(
+    null
+  );
   const [suggestion, setSuggestion] = useState<string | null>(null);
   const [explanation, setExplanation] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -79,7 +85,10 @@ export default function ScanAndFixStep({ projectPath }: { projectPath: string })
     setSelectedWarning(warning);
     setLoadingAI(true);
     try {
-      const code = await fetchFileCode(projectPath, warning.fileName);
+      const code = await fetchFileCode(
+        projectPath + warning.filePath,
+        warning.fileName
+      );
       const res = await getAISuggestion({
         fileName: warning.fileName,
         warning: warning.description,
@@ -100,7 +109,10 @@ export default function ScanAndFixStep({ projectPath }: { projectPath: string })
     if (!selectedWarning || !suggestion) return;
     setApplying(true);
     try {
-      await applySuggestion(`${projectPath}/${selectedWarning.fileName}`, suggestion);
+      await applySuggestion(
+        `${projectPath}/${selectedWarning.fileName}`,
+        suggestion
+      );
       message.success("Suggestion applied successfully");
       setModalOpen(false);
     } catch {
