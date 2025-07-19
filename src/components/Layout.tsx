@@ -20,8 +20,8 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       icon: <DashboardOutlined />,
     },
     {
-      label: <Link to="/upload">Upgrade Project</Link>,
-      key: "/upload",
+      label: <Link to="/projects">Upgrade Project</Link>,
+      key: "/projects",
       icon: <ExperimentOutlined />,
     },
     {
