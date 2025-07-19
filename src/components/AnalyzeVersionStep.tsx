@@ -3,7 +3,7 @@ import { Typography, Spin, message, Card, List } from "antd";
 
 import { getProjectInfo, type ProjectInfo } from "../services/projectService";
 
-const { Paragraph, Title } = Typography;
+const { Paragraph, Title, Text } = Typography;
 
 type Props = {
   projectPath: string;
@@ -48,12 +48,14 @@ export default function AnalyzeVersionStep({ projectPath, onComplete }: Props) {
       </Paragraph>
     );
   }
-
+  // TODO get recommended version from backend
+  // For now, we assume the recommended version is 8.1.1
   return (
     <div className="mt-4">
       <Card>
-        <Title level={5}>Detected Angular Version</Title>
-        <Paragraph>{info.version}</Paragraph>
+        <Title level={5}> 
+          Detected Angular Version: Angular <Text className="">^{info.version}</Text>. Recommended Angular Version: Angular <Text strong>8.1.1</Text>
+        </Title>
 
         <Title level={5}>Main Dependencies</Title>
         <List

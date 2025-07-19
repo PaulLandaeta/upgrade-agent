@@ -6,6 +6,7 @@ import ScanWarningsStep from "../components/ScanWarningsStep";
 import GetAISuggestionsStep from "../components/GetAISuggestionsStep";
 import ApplyFixesStep from "../components/ApplyFixesStep";
 import { useProjectStore } from "../store/projectStore";
+import ScanAndFixStep from "../components/ScanAndFixStep";
 
 const { Step } = Steps;
 const { Title } = Typography;
@@ -35,21 +36,19 @@ export default function Migrator() {
     {
       title: "Scan for Warnings",
       content: (
-        <ScanWarningsStep
+        <ScanAndFixStep
           projectPath={projectPath}
-          onComplete={next}
-          onWarningsParsed={setWarnings}
         />
       ),
     },
-    {
-      title: "Get AI Suggestions",
-      content: <GetAISuggestionsStep warnings={warnings} path={projectPath} />,
-    },
-    {
-      title: "Apply Fixes",
-      content: <ApplyFixesStep path={projectPath} suggestions={[]} />,
-    },
+    // {
+    //   title: "Get AI Suggestions",
+    //   content: <GetAISuggestionsStep warnings={warnings} path={projectPath} />,
+    // },
+    // {
+    //   title: "Apply Fixes",
+    //   content: <ApplyFixesStep path={projectPath} suggestions={[]} />,
+    // },
   ];
 
   return (
@@ -67,7 +66,7 @@ export default function Migrator() {
 
         <div className="min-h-[400px]">{steps[current].content}</div>
 
-        <div className="flex justify-center mt-8 gap-4">
+        <div className="flex justify-center mt-5 gap-4">
           {current > 0 && (
             <Button className="w-32" size="large" onClick={() => back()}>
               Back
