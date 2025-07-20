@@ -16,7 +16,6 @@ interface WarningItem {
 
 export default function ScanWarningStep({
   projectPath,
-  onComplete,
   onWarningsParsed,
 }: {
   projectPath: string;

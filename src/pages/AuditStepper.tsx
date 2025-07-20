@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Steps, Button, Card, Typography } from "antd";
 import UploadDropZone from "../components/UploadDropZone";
 import { useProjectStore } from "../store/projectStore";
-import ScanAndFixStep from "../components/ScanAndFixStep";
 import AuditAlertsStep from "../components/DependencyAlertsStep";
 
 const { Step } = Steps;
@@ -10,7 +9,6 @@ const { Title } = Typography;
 
 export default function Migrator() {
   const [current, setCurrent] = useState(0);
-  const [warnings, setWarnings] = useState<WarningItem[]>([]);
   const { projectPath } = useProjectStore();
 
   const next = () => setCurrent((prev) => prev + 1);

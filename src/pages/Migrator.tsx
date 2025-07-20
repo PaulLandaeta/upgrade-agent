@@ -10,7 +10,6 @@ const { Title } = Typography;
 
 export default function Migrator() {
   const [current, setCurrent] = useState(0);
-  const [warnings, setWarnings] = useState<WarningItem[]>([]);
   const { projectPath } = useProjectStore();
 
   const next = () => setCurrent((prev) => prev + 1);

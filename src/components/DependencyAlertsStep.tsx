@@ -25,6 +25,7 @@ interface AlertItem {
   vulnerable_versions: string;
   severity: string;
   recommendation: string;
+  title: string;
 }
 
 export default function AuditAlertsStep() {
@@ -66,7 +67,7 @@ export default function AuditAlertsStep() {
         vulnerable_versions: alert.vulnerable_versions,
         recommendation: alert.recommendation,
         severity: alert.severity,
-        title: alert.title,
+        title: alert?.title,
       });
       setSuggestion(res.fix);
       setExplanation(res.explanation);
