@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Steps, Button, Card, Typography } from "antd";
 import UploadDropZone from "../components/UploadDropZone";
-import AnalyzeVersionStep from "../components/AnalyzeVersionStep";
 import { useProjectStore } from "../store/projectStore";
 import ScanAndFixStep from "../components/ScanAndFixStep";
+import AuditAlertsStep from "../components/DependencyAlertsStep";
 
 const { Step } = Steps;
 const { Title } = Typography;
@@ -22,25 +22,18 @@ export default function Migrator() {
       content: <UploadDropZone onSuccess={next} />,
     },
     {
-      title: "Analyze Version",
+      title: "Audit Project Version and Dependencies",
       content: (
-        <AnalyzeVersionStep
-          projectPath={projectPath}
-          onComplete={(data) => console.log("Analysis complete:", data)}
-        />
+        <AuditAlertsStep />
       ),
-    },
-    {
-      title: "Scan for Warnings",
-      content: <ScanAndFixStep projectPath={projectPath} />,
-    },
+    }
   ];
 
   return (
     <div className="bg-gray-50 flex justify-center items-start p-5">
       <Card className="mx-auto mt-10 p-6 shadow-lg bg-white max-w-6xl w-full min-h-[75vh]">
         <Title level={3} className="mb-6 text-center">
-          Angular Migration Assistant
+          Audit Projects
         </Title>
 
         <Steps current={current} className="mb-6 mt-6">

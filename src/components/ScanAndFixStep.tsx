@@ -110,7 +110,7 @@ export default function ScanAndFixStep({
     setApplying(true);
     try {
       await applySuggestion(
-        `${projectPath}/${selectedWarning.fileName}`,
+        `${projectPath}/${selectedWarning.filePath}`,
         suggestion
       );
       message.success("Suggestion applied successfully");

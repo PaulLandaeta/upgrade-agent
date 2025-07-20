@@ -7,6 +7,7 @@ import {
   SwapOutlined,
 } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
+import user from "../assets/user.png";
 
 const { Header, Sider, Content, Footer } = AntLayout;
 
@@ -25,8 +26,8 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       icon: <ExperimentOutlined />,
     },
     {
-      label: <Link to="/alerts">Migration Alerts</Link>,
-      key: "/alerts",
+      label: <Link to="/audited-projects">Migration Alerts</Link>,
+      key: "/audited-projects",
       icon: <AlertOutlined />,
     },
     {
@@ -45,7 +46,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         style={{ display: "flex", flexDirection: "column", height: "100vh" }}
       >
         <div className="h-16 flex items-center justify-center text-white text-xl font-bold border-b border-gray-700">
-          Upgrade Agent
+          Exodous Assistant
         </div>
         <div className="flex-1 overflow-y-auto">
           <Menu
@@ -58,14 +59,14 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         </div>
         <div className="p-4 border-t border-gray-700 flex items-center gap-3">
           <img
-            src="https://randomuser.me/api/portraits/women/44.jpg"
+            src={user}
             alt="User avatar"
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="text-white text-sm leading-tight overflow-hidden">
-            <div className="font-medium truncate">Melinda Jesell</div>
+            <div className="font-medium truncate">AI Turing</div>
             <div className="text-gray-400 text-xs truncate">
-              melinda@upgrade.ai
+              aturing@exodous.ai
             </div>
           </div>
         </div>
@@ -78,7 +79,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         </Header>
         <Content className="bg-[#F9FAFB] p-6">{children}</Content>
         <Footer className="text-center text-gray-400 bg-white py-6">
-          © 2025 Upgrade Agent
+          © 2025 Exodous Assistant
         </Footer>
       </AntLayout>
     </AntLayout>

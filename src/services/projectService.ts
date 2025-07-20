@@ -46,3 +46,13 @@ export async function getProjectInfo(path: string): Promise<ProjectInfo> {
   });
   return res.data;
 }
+
+export async function auditDependencies(path: string) {
+  const res = await apiInstance.post("/project/audit", { path });
+  return res.data;
+}
+
+export async function getAuditSuggestion(data: any) {
+  const res = await apiInstance.post("/ai/audit-suggestion", data);
+  return res.data;
+}
