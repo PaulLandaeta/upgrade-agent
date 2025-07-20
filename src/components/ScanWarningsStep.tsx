@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Table, Typography, Tooltip, Space, Spin, message } from "antd";
+import { API_BASE_URL } from "../config";
 import {
   DeleteOutlined,
   EyeOutlined,
@@ -29,7 +30,7 @@ export default function ScanWarningStep({
     const fetchWarnings = async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/api/project/warnings?path=${encodeURIComponent(
+          `${API_BASE_URL}/project/warnings?path=${encodeURIComponent(
             projectPath
           )}&from=6&to=8`
         );
