@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { Layout as AntLayout, Menu } from "antd";
 import {
-  DashboardOutlined,
   ExperimentOutlined,
   AlertOutlined,
   SwapOutlined,
@@ -15,11 +14,6 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
 
   const menuItems = [
-    {
-      label: <Link to="/">Dashboard</Link>,
-      key: "/",
-      icon: <DashboardOutlined />,
-    },
     {
       label: <Link to="/projects">Upgrade Project</Link>,
       key: "/projects",
