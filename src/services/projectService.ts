@@ -1,4 +1,5 @@
 import apiInstance from "./apiInstance";
+import type { MigrationFile } from "./aiService";
 
 export async function fetchFileCode(
   path: string,
@@ -54,5 +55,16 @@ export async function auditDependencies(path: string) {
 
 export async function getAuditSuggestion(data: any) {
   const res = await apiInstance.post("/ai/audit-suggestion", data);
+  return res.data;
+}
+
+export async function createProject(
+  fileList: MigrationFile[],
+  projectName: string
+): Promise<{ message: string; backup: string }> {
+  const res = await apiInstance.post("/project/create-project", {
+    projectName,
+    fileList
+  });
   return res.data;
 }

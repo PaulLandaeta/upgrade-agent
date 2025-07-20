@@ -31,8 +31,8 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       icon: <AlertOutlined />,
     },
     {
-      label: <Link to="/ng2react">Angular ➜ React</Link>,
-      key: "/ng2react",
+      label: <Link to="/framework-migration">Angular ➜ React</Link>,
+      key: "/framework-migration",
       icon: <SwapOutlined />,
     },
   ];
