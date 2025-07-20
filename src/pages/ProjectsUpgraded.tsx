@@ -3,6 +3,7 @@ import { Card, Typography, Spin, Tag, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import angularLogo from "../assets/angular.svg";
 import { useProjectStore } from "../store/projectStore";
+import { API_BASE_URL } from "../config";
 
 const { Title, Paragraph } = Typography;
 
@@ -18,7 +19,7 @@ export default function Projects() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/project/list")
+    fetch(`${API_BASE_URL}/project/list`)
       .then((res) => res.json())
       .then((data) => setProjects(data))
       .catch((err) => console.error("Error loading projects", err))

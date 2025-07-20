@@ -67,3 +67,9 @@ export default tseslint.config([
   },
 ])
 ```
+
+## Backend URL
+
+Configure the backend API url via the `VITE_API_BASE_URL` environment variable.
+Create a `.env` file based on `.env.example` and adjust the value if needed.
+

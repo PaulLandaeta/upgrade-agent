@@ -9,6 +9,7 @@ import {
   Space,
 } from "antd";
 import { CheckOutlined, EyeOutlined } from "@ant-design/icons";
+import { API_BASE_URL } from "../config";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -34,7 +35,7 @@ export default function ApplyFixesStep({ path, suggestions }: Props) {
     setLoadingKey(fileName);
     try {
       const filePath = `${path}/${fileName}`;
-      const res = await fetch("http://localhost:4000/api/project/apply-suggestion", {
+      const res = await fetch(`${API_BASE_URL}/project/apply-suggestion`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filePath, codeUpdated }),

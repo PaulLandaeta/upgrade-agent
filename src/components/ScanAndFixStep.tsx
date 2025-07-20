@@ -20,6 +20,7 @@ import {
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { getAISuggestion } from "../services/aiService";
 import { fetchFileCode, applySuggestion } from "../services/projectService";
+import { API_BASE_URL } from "../config";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -53,7 +54,7 @@ export default function ScanAndFixStep({
     const fetchWarnings = async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/api/project/warnings?path=${encodeURIComponent(
+          `${API_BASE_URL}/project/warnings?path=${encodeURIComponent(
             projectPath
           )}&from=6&to=8`
         );
